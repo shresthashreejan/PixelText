@@ -11,10 +11,10 @@
 <Toaster />
 <nav class="absolute w-full p-4">
 	<div class="flex justify-between">
-		<div>
-			<a href="/" class="text-5xl font-medium">PixelText.</a>
+		<a href="/">
+			<div class="text-5xl font-medium">PixelText.</div>
 			<p class="text-xl">Convert image to text easily.</p>
-		</div>
+		</a>
 
 		<Button onclick={toggleMode} variant="outline" size="icon">
 			<Sun
