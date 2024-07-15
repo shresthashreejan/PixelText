@@ -38,6 +38,7 @@
 							toast.error(
 								'Multiple file upload is not supported. Please upload one image at a time.'
 							);
+							loading = false;
 							return;
 						}
 						let firstFile = files.item(0);
@@ -55,7 +56,8 @@
 									})();
 								}
 							} else {
-								toast.error(`${firstFile.name} is not an image file.`);
+								toast.error(`Uploaded file is not an image.`);
+								loading = false;
 							}
 						}
 					}
