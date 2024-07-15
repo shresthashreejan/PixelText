@@ -117,6 +117,7 @@
 									resolve(grayscaleFile);
 								} else {
 									toast.error('Grayscale conversion failed.');
+									loading = false;
 									reject(new Error('Grayscale conversion failed.'));
 								}
 							}, 'image/png');
@@ -127,6 +128,7 @@
 
 			reader.onerror = function () {
 				reject(new Error('Failed to read image file.'));
+				loading = false;
 			};
 
 			reader.readAsDataURL(fileInput);
