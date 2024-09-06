@@ -184,7 +184,7 @@
 			class="dropzone cursor min-h-[50vh] w-full rounded-xl border-2 transition-opacity xl:w-[50vw]"
 		>
 			<div class="flex h-full items-center justify-center text-xl opacity-50">
-				Drop your image here...
+				Drop your image or paste from clipboard here...
 			</div>
 		</div>
 	{/if}
