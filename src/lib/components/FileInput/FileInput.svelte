@@ -7,6 +7,7 @@
 
 	let loading: boolean = $state(false);
 	let recognizedText: string = $state('');
+
 	$effect(() => {
 		['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
 			dropZone.addEventListener(
@@ -30,34 +31,25 @@
 				e.preventDefault();
 				e.stopPropagation();
 				loading = true;
-				let dt = e.dataTransfer;
-				if (dt) {
-					let files = dt.files;
-					if (files) {
-						if (files.length > 1) {
-							toast.error(
-								'Multiple file upload is not supported. Please upload one image at a time.'
-							);
-							loading = false;
-							return;
-						}
-						let firstFile = files.item(0);
-						if (firstFile) {
-							if (/^image\//.test(firstFile.type)) {
-								const grayscaleFile = await convertToGrayscale(firstFile);
+				if (e.dataTransfer) {
+					await handleFiles(Array.from(e.dataTransfer.files));
+				}
+			},
+			false
+		);
 
-								if (grayscaleFile) {
-									(async () => {
-										const worker = await createWorker('eng');
-										const ret = await worker.recognize(grayscaleFile);
-										recognizedText = ret.data.text;
-										loading = false;
-										await worker.terminate();
-									})();
-								}
-							} else {
-								toast.error(`Uploaded file is not an image.`);
-								loading = false;
+		window.addEventListener(
+			'paste',
+			async (e: ClipboardEvent) => {
+				const items = e.clipboardData?.items;
+				if (items) {
+					for (let i = 0; i < items.length; i++) {
+						const item = items[i];
+						if (item.kind === 'file' && item.type.startsWith('image/')) {
+							const file = item.getAsFile();
+							if (file) {
+								loading = true;
+								await handleFiles([file]);
 							}
 						}
 					}
@@ -66,6 +58,36 @@
 			false
 		);
 	});
+
+	async function handleFiles(files: File[]) {
+		if (files.length > 1) {
+			toast.error('Multiple file upload is not supported. Please upload one image at a time.');
+			loading = false;
+			return;
+		}
+
+		const firstFile = files[0];
+		if (firstFile) {
+			if (/^image\//.test(firstFile.type)) {
+				const grayscaleFile = await convertToGrayscale(firstFile);
+				if (grayscaleFile) {
+					const worker = await createWorker('eng');
+					const ret = await worker.recognize(grayscaleFile);
+					if (ret.data.text) {
+						recognizedText = ret.data.text;
+					} else {
+						toast.error('Text not found.');
+					}
+
+					loading = false;
+					await worker.terminate();
+				}
+			} else {
+				toast.error(`Uploaded file is not an image.`);
+				loading = false;
+			}
+		}
+	}
 
 	async function convertToGrayscale(fileInput: File): Promise<File> {
 		return new Promise<File>((resolve, reject) => {
