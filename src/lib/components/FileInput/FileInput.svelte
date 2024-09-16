@@ -164,6 +164,10 @@
 	function reset() {
 		window.location.reload();
 	}
+
+	async function copy() {
+		await navigator.clipboard.writeText(recognizedText);
+	}
 </script>
 
 <main class="flex w-full justify-center p-4 md:mt-0">
@@ -176,7 +180,10 @@
 					{recognizedText}
 				</div>
 			</div>
-			<Button onclick={reset}>Reset</Button>
+			<div class="flex gap-4">
+				<Button onclick={copy}>Copy</Button>
+				<Button onclick={reset}>Reset</Button>
+			</div>
 		</div>
 	{:else}
 		<div
