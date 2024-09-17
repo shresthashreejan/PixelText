@@ -167,6 +167,7 @@
 
 	async function copy() {
 		await navigator.clipboard.writeText(recognizedText);
+		toast('Text copied.');
 	}
 </script>
 
